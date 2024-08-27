@@ -41,7 +41,7 @@ class FFT:
 
         temp = self.currMovement
         if self.currScreen == "main":
-            if 29.5 <= float(freqs[index]) < 30.5: # 13 Hz
+            if 29.5 <= float(freqs[index]) < 30.5: #! 13 Hz (NEEDS TO BE CHANGED EVENTUALLY)
                 temp = "movement"
                 self.currScreen = "movement"
             elif 14.5 <= float(freqs[index]) < 15.5: # 15 Hz
@@ -55,7 +55,7 @@ class FFT:
                 temp = "moveUp"
             elif 10.5 <= float(freqs[index]) < 11.5: # 11 Hz
                 temp = "moveDown"
-            elif 29.5 <= float(freqs[index]) < 30.5: # 13 Hz
+            elif 29.5 <= float(freqs[index]) < 30.5: #! 13 Hz (NEEDS TO BE CHANGED EVENTUALLY)
                 temp = "moveForward"
             elif 7.5 <= float(freqs[index]) < 8.5: # 8 Hz
                 temp = "moveBackward"
