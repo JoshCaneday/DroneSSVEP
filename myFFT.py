@@ -41,33 +41,40 @@ class FFT:
 
         temp = self.currMovement
         if self.currScreen == "main":
-            if 30.5 <= float(freqs[index]) < 31.5:
-                temp = "moveDown"
-            elif 29.5 <= float(freqs[index]) < 30.5:
-                temp = "moveForward"
-            elif 28.5 <= float(freqs[index]) < 29.5:
-                temp = "moveBackward"
+            if 29.5 <= float(freqs[index]) < 30.5: # 13 Hz
+                temp = "movement"
+                self.currScreen = "movement"
+            elif 14.5 <= float(freqs[index]) < 15.5: # 15 Hz
+                temp = "view"
+                self.currScreen = "view"
+            elif 10.5 <= float(freqs[index]) < 11.5: # 11 Hz
+                temp = "rotation"
+                self.currScreen = "rotation"
         elif self.currScreen == "movement":
-            if 30.5 <= float(freqs[index]) < 31.5:
+            if 8.5 <= float(freqs[index]) < 9.5: # 9 Hz
+                temp = "moveUp"
+            elif 10.5 <= float(freqs[index]) < 11.5: # 11 Hz
                 temp = "moveDown"
-            elif 29.5 <= float(freqs[index]) < 30.5:
+            elif 29.5 <= float(freqs[index]) < 30.5: # 13 Hz
                 temp = "moveForward"
-            elif 28.5 <= float(freqs[index]) < 29.5:
+            elif 7.5 <= float(freqs[index]) < 8.5: # 8 Hz
                 temp = "moveBackward"
+            elif 13.5 <= float(freqs[index]) < 14.5: # 14 Hz
+                temp = "moveRight"
+            elif 14.5 <= float(freqs[index]) < 15.5: # 15 Hz
+                temp = "moveLeft"
         elif self.currScreen == "rotation":
-            if 30.5 <= float(freqs[index]) < 31.5:
-                temp = "moveDown"
-            elif 29.5 <= float(freqs[index]) < 30.5:
-                temp = "moveForward"
-            elif 28.5 <= float(freqs[index]) < 29.5:
-                temp = "moveBackward"
+            if 8.5 <= float(freqs[index]) < 9.5:
+                temp = "bankUp"
+            elif 10.5 <= float(freqs[index]) < 11.5:
+                temp = "bankDown"
+            elif 12.5 <= float(freqs[index]) < 13.5:
+                temp = "rotateRight"
+            elif 14.5 <= float(freqs[index]) < 15.5:
+                temp = "rotateLeft"
         elif self.currScreen == "view":
-            if 30.5 <= float(freqs[index]) < 31.5:
-                temp = "moveDown"
-            elif 29.5 <= float(freqs[index]) < 30.5:
-                temp = "moveForward"
-            elif 28.5 <= float(freqs[index]) < 29.5:
-                temp = "moveBackward"
+            if 11.5 <= float(freqs[index]) < 12.5:
+                temp = "goBack"
 
         self.currMovement = temp
         self.outlet.push_sample([temp]) 

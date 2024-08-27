@@ -82,7 +82,7 @@ class Main_Controller:
                     # This continuously adds a timestamp and sample to the list holding the eeg data and timestamps which will later be used in an FFT
                     self.outer.FFT.addTimestamp(timestamp)
                     self.outer.FFT.addAmplitude(sample[5]) #! ARBITRARY CHANNEL, MAKE SURE TO INCLUDE OTHERS
-                    print(sample,timestamp)
+                    #print(sample,timestamp)
     
     class Marker_Stream:
         # This is the Marker_Stream Object that will be in charge of looking at the incoming Markers, it will then change the pullEEG outerclass variable so that we know when to
