@@ -1,6 +1,7 @@
 import threading
 from pylsl import StreamInlet, resolve_stream, StreamOutlet, StreamInfo
 from myFFT import FFT
+from Calibrator import Calibrator
 
 #This script contains the FFT part while main does not
 class Main_Controller:
@@ -10,6 +11,11 @@ class Main_Controller:
         self.eeg_stream = None
         self.marker_stream = None
         self.FFT = None
+        self.calibrator = None
+
+    def calibrate(self):
+        self.calibrator = Calibrator()
+        
 
     def run_eeg(self):
         # Using the inner class EEG_Stream we create the object that will stream the EEG data
@@ -81,7 +87,7 @@ class Main_Controller:
                     sample, timestamp = self.inlet.pull_sample()
                     # This continuously adds a timestamp and sample to the list holding the eeg data and timestamps which will later be used in an FFT
                     self.outer.FFT.addTimestamp(timestamp)
-                    self.outer.FFT.addAmplitude(sample[0]) #! ARBITRARY CHANNEL, MAKE SURE TO INCLUDE OTHERS
+                    self.outer.FFT.addAmplitude(sample) #! ARBITRARY CHANNEL, MAKE SURE TO INCLUDE OTHERS
                     #print(sample,timestamp)
     
     class Marker_Stream:

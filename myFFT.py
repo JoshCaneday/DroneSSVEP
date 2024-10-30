@@ -26,6 +26,24 @@ class FFT:
     def transform(self):
         # This method does the actual FFT and will plot the FFT Plot
         # x-axis is frequency, y-axis is magnitude
+        channels = [list(col) for col in zip(*self.y)]
+        freqs_per_channel = []
+        for i in channels:
+            output = np.fft.fft(i)
+            freqs = np.abs(np.fft.fftfreq(len(i), d=self.x[1] - self.x[0])) # Need clarification on this
+            magnitude = np.abs(output)
+            highest = -1
+            index = -1
+            for i in range(len(magnitude)):
+                if magnitude[i] > highest and freqs[i] > 1:
+                    highest = magnitude[i]
+                    index = i
+            #self.outlet.push_sample([freqs[index]])
+            print("The Frequency is:", freqs[index])
+            freqs_per_channel.append(freqs[index])
+        avg_freq = sum(freqs_per_channel)/len(freqs_per_channel)
+        print(avg_freq)
+        '''
         output = np.fft.fft(self.y)
         freqs = np.abs(np.fft.fftfreq(len(self.y), d=self.x[1] - self.x[0])) # Need clarification on this
         magnitude = np.abs(output)
@@ -38,6 +56,9 @@ class FFT:
         #self.outlet.push_sample([freqs[index]])
         print("The Frequency is:", freqs[index])
         #print(type(freqs[index]))
+        '''
+        freqs = [100] #temporary
+        index = 0 #temporary
 
         temp = self.currMovement
         if self.currScreen == "main":
