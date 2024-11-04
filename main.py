@@ -12,10 +12,11 @@ class Main_Controller:
         self.marker_stream = None
         self.FFT = None
         self.calibrator = None
+        self.calibrated_freqs = {}
 
     def calibrate(self):
         self.calibrator = Calibrator()
-        
+        self.calibrated_freqs = self.calibrator.calibrate()
 
     def run_eeg(self):
         # Using the inner class EEG_Stream we create the object that will stream the EEG data
@@ -32,6 +33,7 @@ class Main_Controller:
         
 
     def run_all(self):
+        self.calibrate()
         # Initialize FFT object, currently does not have any information on the timestamps or eeg data, will add later
         # It is absolutely vital that this is run prior to connecting to stream on Godot
         self.FFT = FFT()

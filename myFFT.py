@@ -3,13 +3,14 @@ import matplotlib.pyplot as plt
 from pylsl import StreamOutlet, StreamInfo
 
 class FFT:
-    def __init__(self, x = [], y = []) -> None:
+    def __init__(self, freq_map = {}, x = [], y = []) -> None:
         self.x = x # timestamp
         self.y = y # amplitude
         self.info = StreamInfo("backendMarker", "Markers", 1, 0, channel_format="string") # Initialize the info for the output marker Stream that we will be sending to Godot and possibly drone controller
         self.outlet = StreamOutlet(self.info) # initialize the outlet Stream
         self.currMovement = ""
         self.currScreen = "main" #other screens include view, movement, and rotation
+        self.freq_map = freq_map
 
     def setTimestamps(self,x):
         self.x = x
@@ -23,6 +24,32 @@ class FFT:
     def addAmplitude(self,y):
         self.y.append(y)
     
+    def compute_FFT(self):
+        # This method does the actual FFT and will plot the FFT Plot
+        # x-axis is frequency, y-axis is magnitude
+        channels = [list(col) for col in zip(*self.y)]
+        freqs_per_channel = []
+        for i in channels:
+            output = np.fft.fft(i)
+            freqs = np.abs(np.fft.fftfreq(len(i), d=self.x[1] - self.x[0])) # Need clarification on this
+            magnitude = np.abs(output)
+            highest = -1
+            index = -1
+            for i in range(len(magnitude)):
+                if magnitude[i] > highest and freqs[i] > 1:
+                    highest = magnitude[i]
+                    index = i
+            #self.outlet.push_sample([freqs[index]])
+            print("The Frequency is:", freqs[index])
+            freqs_per_channel.append(freqs[index])
+        avg_freq = sum(freqs_per_channel)/len(freqs_per_channel)
+        return(avg_freq)
+
+    def outputControl(self):
+        input = self.compute_FFT()
+        
+
+
     def transform(self):
         # This method does the actual FFT and will plot the FFT Plot
         # x-axis is frequency, y-axis is magnitude
