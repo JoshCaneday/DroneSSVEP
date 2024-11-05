@@ -42,11 +42,19 @@ class FFT:
             #self.outlet.push_sample([freqs[index]])
             print("The Frequency is:", freqs[index])
             freqs_per_channel.append(freqs[index])
+            plt.figure(figsize=(10, 5))
+            plt.plot(freqs[:len(freqs)//2], magnitude[:len(magnitude)//2])  # Only positive frequencies
+            plt.title(f'FFT Spectrum for Channel {i + 1}')
+            plt.xlabel('Frequency (Hz)')
+            plt.ylabel('Magnitude')
+            plt.show()
         avg_freq = sum(freqs_per_channel)/len(freqs_per_channel)
         return(avg_freq)
 
     def outputControl(self):
-        input = self.compute_FFT()
+        input = round(self.compute_FFT())
+        #use this freqenciy and map it to the control then return that control (should be a string return)
+        
         
 
 

@@ -9,7 +9,8 @@ class Calibrator:
         self.EEGinlet = None
         self.Markerinlet = None
         self.collect_data = False
-        self.cur_freq = 8 # This is the first frequency that gets calibrated, the listen_Marker function will start here and incrememnt by 1 until a certain number specified in that function
+        self.start_freq = 8 # This is the first frequency that gets calibrated, the listen_Marker function will start here and incrememnt by 1 until it reaches end_freq
+        self.end_freq = 17
         self.stop_threads = False
 
     def connect_marker_stream(self):
@@ -29,7 +30,7 @@ class Calibrator:
                 break
 
     def listen_EEG(self):
-        while True and not self.stop_threads:
+        while (not self.stop_threads):
             #continuously gather the sample as well as the particular timestamp
             sample, timestamp = self.EEGinlet.pull_sample()
             if self.collect_data:
@@ -38,19 +39,22 @@ class Calibrator:
 
 
     def listen_Marker(self):
-        while True and not self.stop_threads:
+        cur_freq = self.start_freq
+        while (not self.stop_threads):
             #continuously gather the sample as well as the particular timestamp
             sample, timestamp = self.Markerinlet.pull_sample()
             if sample[0] == "Start Calibrating":
                 self.collect_data = True
             elif sample[0] == "Stop Calibrating":
                 self.collect_data = False
-                self.freq_map[self.cur_freq] = self.FFT.compute_FFT()
+                if not self.freq_map[cur_freq]:
+                    self.freq_map[cur_freq] = []
+                self.freq_map[cur_freq].append(self.FFT.compute_FFT())
                 self.FFT.setAmplitude([])
                 self.FFT.setTimestamps([])
                 self.collect_data = False
-                self.cur_freq += 1
-                if self.cur_freq == 17:
+                cur_freq += 1
+                if cur_freq == self.end_freq:
                     self.stop_threads = True
 
     def calibrate(self):
