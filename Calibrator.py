@@ -15,9 +15,9 @@ class Calibrator:
 
     def connect_marker_stream(self):
         print("looking for Marker stream...")
-        streams = resolve_stream('type', 'Marker')
+        streams = resolve_stream('type', 'Markers')
         for stream in streams:
-            if stream.name() == "calibrationMarkerStream":
+            if stream.name() == "GodotMarkerStream":
                 self.Markerinlet = StreamInlet(stream)
                 break
 
@@ -25,11 +25,12 @@ class Calibrator:
         print("looking for EEG stream...")
         streams = resolve_stream('type', 'EEG')
         for stream in streams:
-            if stream.name() == "calibrationEEGStream":
+            if stream.name() == "droneEEG":
                 self.EEGinlet = StreamInlet(stream)
                 break
 
     def listen_EEG(self):
+        #print("test")
         while (not self.stop_threads):
             #continuously gather the sample as well as the particular timestamp
             sample, timestamp = self.EEGinlet.pull_sample()
@@ -47,7 +48,7 @@ class Calibrator:
                 self.collect_data = True
             elif sample[0] == "Stop Calibrating":
                 self.collect_data = False
-                if not self.freq_map[cur_freq]:
+                if cur_freq not in self.freq_map:
                     self.freq_map[cur_freq] = []
                 self.freq_map[cur_freq].append(self.FFT.compute_FFT())
                 self.FFT.setAmplitude([])
@@ -56,11 +57,13 @@ class Calibrator:
                 cur_freq += 1
                 if cur_freq == self.end_freq:
                     self.stop_threads = True
+            elif sample[0] == "Calibration Complete":
+                self.stop_threads = True
 
     def calibrate(self):
         self.connect_eeg_stream()
         self.connect_marker_stream()
-
+        print("Proceed to Calibrate")
         eeg_thread = threading.Thread(target=self.listen_EEG)
         marker_thread = threading.Thread(target=self.listen_Marker)
 
@@ -69,6 +72,7 @@ class Calibrator:
 
         eeg_thread.join()
         marker_thread.join()
+        print(self.freq_map)
         return self.freq_map
 
         

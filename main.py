@@ -17,6 +17,15 @@ class Main_Controller:
     def calibrate(self):
         self.calibrator = Calibrator()
         self.calibrated_freqs = self.calibrator.calibrate() #right now this the map maps to a list, change this soon!
+        while True:
+            userinput = input("Please type \"y\" to calibrate again or \"n\" to continue\n")
+            if userinput.lower() == "y":
+                self.calibrate()
+                break
+            elif userinput.lower() == "n":
+                break
+            else:
+                print("Invalid input, \"y\" to calibrate again or \"n\" to continue\n")
 
     def run_eeg(self):
         # Using the inner class EEG_Stream we create the object that will stream the EEG data
@@ -43,7 +52,7 @@ class Main_Controller:
             if userinput.lower() == "c":
                 break
             else:
-                print("Invalid input, type \"c\" to connect")
+                print("Invalid input, type \"c\" to connect\n")
         # Here we use multi-threading so that we can stream both the EEG data as well as the Markers at the same time
         script1_thread = threading.Thread(target=self.run_eeg)
         script2_thread = threading.Thread(target=self.run_marker)
@@ -71,6 +80,7 @@ class Main_Controller:
             print("looking for eeg stream...")
             streams = resolve_stream('type', 'EEG')
             for stream in streams:
+                print(stream.name())
                 if stream.name() == "droneEEG":
                     self.inlet = StreamInlet(stream)
                     break
@@ -108,6 +118,7 @@ class Main_Controller:
             print("looking for a marker stream...")
             streams = resolve_stream("type", "Markers")
             for stream in streams:
+                print(stream.name())
                 if stream.name() == "GodotMarkerStream":
                     self.inlet = StreamInlet(stream)
                     break
