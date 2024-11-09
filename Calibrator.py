@@ -9,8 +9,8 @@ class Calibrator:
         self.EEGinlet = None
         self.Markerinlet = None
         self.collect_data = False
-        self.start_freq = 8 # This is the first frequency that gets calibrated, the listen_Marker function will start here and incrememnt by 1 until it reaches end_freq
-        self.end_freq = 17
+        self.start_freq = 6 # This is the first frequency that gets calibrated, the listen_Marker function will start here and incrememnt by 1 until it reaches end_freq
+        self.end_freq = 97
         self.stop_threads = False
 
     def connect_marker_stream(self):
