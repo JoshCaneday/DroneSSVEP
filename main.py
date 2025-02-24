@@ -36,7 +36,7 @@ class Main_Controller:
         # Initialize FFT object, currently does not have any information on the timestamps or eeg data, will add later
         # It is absolutely vital that this is run prior to connecting to stream on Godot
         self.FFT = FFT()
-        self.threshold = Threshold()
+        #self.threshold = Threshold()
         # Makes sure user is ready to move on
         while True:
             userinput = input("Please type \"c\" to connect\n")
