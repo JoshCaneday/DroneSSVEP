@@ -88,7 +88,7 @@ class Main_Controller:
                     sample, timestamp = self.inlet.pull_sample()
                     # This continuously adds a timestamp and sample to the list holding the eeg data and timestamps which will later be used in an FFT
                     self.outer.FFT.addTimestamp(timestamp)
-                    self.outer.FFT.addAmplitude(sample[3]) #! ARBITRARY CHANNEL, MAKE SURE TO INCLUDE OTHERS
+                    self.outer.FFT.addAmplitude(sample[1]) #! ARBITRARY CHANNEL, MAKE SURE TO INCLUDE OTHERS
                     #print(sample,timestamp)
 
     class EEG_Eyeblink_Stream:
