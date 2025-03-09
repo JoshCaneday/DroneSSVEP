@@ -72,7 +72,7 @@ class Main_Controller:
             streams = resolve_stream('type', 'EEG')
             for stream in streams:
                 if stream.name() == "droneEEG":
-                    self.inlet = StreamInlet(stream)
+                    self.inlet = StreamInlet(stream,max_buflen=1)
                     break
 
         def get_pullEEG(self):
