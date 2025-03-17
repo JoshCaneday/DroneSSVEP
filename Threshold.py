@@ -3,7 +3,7 @@ import collections
 
 class Threshold:
     def __init__(self):
-        self.threshold = 0
+        self.threshold = 200000
         self.data = collections.deque()
         # self.timestamps = collections.deque()
         self.curr_power = 0
@@ -25,10 +25,9 @@ class Threshold:
         '''
         self.data.append(data[self.channel] ** 2)
         self.curr_power += data[self.channel] ** 2
-
         if len(self.data) < 600:
             return False
-        
+        #print(self.cur_power)
         res = False
         if self.curr_power > self.threshold:
             res = True

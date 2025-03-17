@@ -27,21 +27,22 @@ class FFT:
     def transform(self):
         # This method does the actual FFT and will plot the FFT Plot
         # x-axis is frequency, y-axis is magnitude
-        fft = np.fft.ffft(self.y)
-        freqs = np.fft.ffftfreq(len(self.y), 1/200)
-        freq,_ = ssvep(np.sum(fft,axis=1),freqs)
+        fft = np.fft.fft(self.y, axis=0)
+        mean_power = np.mean((np.abs(fft)**2), axis=1)
+        freqs = np.fft.fftfreq(len(self.y), 1/200)
+        freq,_ = ssvep(mean_power,freqs)
 
         print("The Frequency is:", freq)
         #print(type(freqs[index]))
         self.curMovement = "None"
         if self.curScreen == "main":
-            if 29.5 <= float(freq) < 30.5: #! 13 Hz (NEEDS TO BE CHANGED EVENTUALLY)
+            if 4 <= float(freq) < 6.5: #! 13 Hz (NEEDS TO BE CHANGED EVENTUALLY)
                 self.curMovement = "movement"
                 self.curScreen = "movement"
-            elif 14.5 <= float(freq) < 15.5: # 15 Hz
+            elif 6.5 <= float(freq) < 9: # 15 Hz
                 self.curMovement = "view"
                 self.curScreen = "view"
-            elif 10.5 <= float(freq) < 11.5: # 11 Hz
+            elif 9 <= float(freq) < 12.5: # 11 Hz
                 self.curMovement = "rotation"
                 self.curScreen = "rotation"
         elif self.curScreen == "movement":
@@ -69,7 +70,7 @@ class FFT:
         elif self.curScreen == "view":
             if 11.5 <= float(freq) < 12.5:
                 self.curMovement = "goBack"
-
+        print(self.curMovement)
         self.outlet.push_sample([self.curMovement]) 
 
 

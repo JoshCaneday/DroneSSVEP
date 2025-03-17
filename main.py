@@ -89,10 +89,16 @@ class Main_Controller:
                     # This continuously adds a timestamp and sample to the list holding the eeg data and timestamps which will later be used in an FFT
                     self.outer.FFT.addTimestamp(timestamp)
                     self.outer.FFT.addAmplitude(sample) #! ARBITRARY CHANNEL, MAKE SURE TO INCLUDE OTHERS
-                if self.calibrate:
-                    self.outer.cur_calibration_block.append(sample)
-                self.outer.threshold.check_threshold(sample)
-                    #print(sample,timestamp)
+
+
+                
+                #if self.calibrate:
+                    #self.outer.cur_calibration_block.append(sample)
+                choice = self.outer.threshold.check_threshold(sample)
+                if choice:
+                    self.outer.FFT.outlet.push_sample(["Clench"])
+                    self.outer.FFT.curScreen = "main"
+                    print("clench")
     
     class Marker_Stream:
         # This is the Marker_Stream Object that will be in charge of looking at the incoming Markers, it will then change the pullEEG outerclass variable so that we know when to
@@ -136,6 +142,7 @@ class Main_Controller:
                         self.outer.FFT.setAmplitude([])
                 
                 print("got %s at time %s" % (sample[0], timestamp))
+                '''
                 if sample[0] == "Start Calibration Block":
                     self.outer.cur_calibration_block = []
                     self.outer.calibrate = True
@@ -144,7 +151,8 @@ class Main_Controller:
                     self.outer.calibration_data.append(self.outer.cur_calibration_block)
                     if len(self.outer.calibration_data) == 2:
                         self.outer.threshold.threshold = self.outer.threshold.create_threshold(self.outer.calibration_data)
-                # Calls method to set the pullEEG variable
+                # Calls method to set the pullEEG variable'
+                '''
                 self.set_pullEEG()
 
 if __name__ == "__main__":
