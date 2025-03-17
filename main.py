@@ -1,4 +1,5 @@
 import threading
+import numpy as np
 from pylsl import StreamInlet, resolve_stream, StreamOutlet, StreamInfo
 from myFFT import FFT
 from Threshold import Threshold
@@ -12,6 +13,9 @@ class Main_Controller:
         self.marker_stream = None
         self.FFT = None # For frequency classification
         self.threshold = None # For eyeblink classification
+        self.calibration_data = [] # Currently rest,squeeze,8,14,10,12,9,15,11,13
+        self.cur_calibration_block = []
+        self.calibrate = False
 
     def run_eeg(self):
         # Using the inner class EEG_Stream we create the object that will stream the EEG data
@@ -25,18 +29,14 @@ class Main_Controller:
         self.marker_stream = self.Marker_Stream(self)
         self.marker_stream.find_stream()
         self.marker_stream.listen()
-    
-    def run_eeg_eyeblink(self):
-        self.eeg_eyeblink_stream = self.EEG_Eyeblink_Stream(self)
-        self.eeg_eyeblink_stream.find_stream()
-        self.eeg_eyeblink_stream.listen()
+
         
 
     def run_all(self):
         # Initialize FFT object, currently does not have any information on the timestamps or eeg data, will add later
         # It is absolutely vital that this is run prior to connecting to stream on Godot
         self.FFT = FFT()
-        #self.threshold = Threshold()
+        self.threshold = Threshold()
         # Makes sure user is ready to move on
         while True:
             userinput = input("Please type \"c\" to connect\n")
@@ -83,39 +83,16 @@ class Main_Controller:
             # This is an endless loop that constantly listens, reading the EEG data (so long as pullEEG_EEG is True)
             while True:
                 # calls method to check current status of pullEEG
+                sample, timestamp = self.inlet.pull_sample()
                 self.get_pullEEG()
                 if self.pullEEG_EEG == True:
-                    sample, timestamp = self.inlet.pull_sample()
                     # This continuously adds a timestamp and sample to the list holding the eeg data and timestamps which will later be used in an FFT
                     self.outer.FFT.addTimestamp(timestamp)
-                    self.outer.FFT.addAmplitude(sample[1]) #! ARBITRARY CHANNEL, MAKE SURE TO INCLUDE OTHERS
+                    self.outer.FFT.addAmplitude(sample) #! ARBITRARY CHANNEL, MAKE SURE TO INCLUDE OTHERS
+                if self.calibrate:
+                    self.outer.cur_calibration_block.append(sample)
+                self.outer.threshold.check_threshold(sample)
                     #print(sample,timestamp)
-
-    class EEG_Eyeblink_Stream:
-        # This is the EEG_Stream Object that will be in charge of streaming solely the EEG data
-
-        def __init__(self,outer) -> None:
-            # The outer is a reference to the outerclass
-            self.inlet = None
-            self.outer = outer
-        
-        def find_stream(self):
-            # This looks for the stream of type EEG and makes sure the name is "droneEEG2". It is basically what connects to the EEG Stream
-            print("looking for eeg stream...")
-            streams = resolve_stream('type', 'EEG')
-            for stream in streams:
-                if stream.name() == "droneEEG2": # Two streams to pull from, should be same data, but we do different stuff with both and pull at different times
-                    self.inlet = StreamInlet(stream)
-                    break
-        
-        def listen(self):
-            # This is an endless loop that constantly listens, reading the EEG data
-            while True:
-                sample, timestamp = self.inlet.pull_sample()
-                # This continuously adds a timestamp and sample to the list holding the eeg data and timestamps which will later be used in the Threshold
-                self.outer.Threshold.addTimestamp(timestamp)
-                self.outer.Threshold.addAmplitude(sample[3]) #! ARBITRARY CHANNEL, MAKE SURE TO INCLUDE OTHERS
-                #print(sample,timestamp)
     
     class Marker_Stream:
         # This is the Marker_Stream Object that will be in charge of looking at the incoming Markers, it will then change the pullEEG outerclass variable so that we know when to
@@ -159,6 +136,14 @@ class Main_Controller:
                         self.outer.FFT.setAmplitude([])
                 
                 print("got %s at time %s" % (sample[0], timestamp))
+                if sample[0] == "Start Calibration Block":
+                    self.outer.cur_calibration_block = []
+                    self.outer.calibrate = True
+                elif sample[0] == "Stop Calibration Block":
+                    self.outer.calibrate = False
+                    self.outer.calibration_data.append(self.outer.cur_calibration_block)
+                    if len(self.outer.calibration_data) == 2:
+                        self.outer.threshold.threshold = self.outer.threshold.create_threshold(self.outer.calibration_data)
                 # Calls method to set the pullEEG variable
                 self.set_pullEEG()
 
