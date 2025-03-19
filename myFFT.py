@@ -3,6 +3,10 @@ import matplotlib.pyplot as plt
 from pylsl import StreamOutlet, StreamInfo
 from ssvep import ssvep
 
+
+
+
+
 class FFT:
     def __init__(self, x = [], y = []) -> None:
         self.x = x # timestamp
@@ -11,6 +15,7 @@ class FFT:
         self.outlet = StreamOutlet(self.info) # initialize the outlet Stream
         self.curMovement = ""
         self.curScreen = "main" #other screens include view, movement, and rotation
+
 
     def setTimestamps(self,x):
         self.x = x
